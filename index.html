@@ -7,6 +7,24 @@
     <title>Number8::Calendar-JS</title>
   </head>
   <body>
+    <form id="fr_calendar" autocomplete="off">
+      <div>
+        <label>Start Date:</label>
+        <input type="date" id="dt_start_date" required>
+      </div>
+      <div>
+        <label>Number Of Days:</label>
+        <input type="number" id="tf_days" min="1" required>
+      </div>
+      <div>
+        <label>Country Code:</label>
+        <input type="text" id="tf_country_code" maxlength="2" required>
+      </div>
+      <div>
+        <button type="submit" id="bt_submit">render</button>
+        <button type="reset" id="bt_reset">cancel</button>
+      </div>
+    </form>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
   </body>
