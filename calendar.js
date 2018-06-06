@@ -12,24 +12,38 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
     var c_current_date = null;
     var c_days = null;
     var c_country_code = null;
+    var c_month_id = null;
 
     /** setters & getters **/
     this.setStartDate = function(start_date) {
         c_start_date = new Date(start_date);
         c_start_date.setMinutes(c_start_date.getTimezoneOffset());
-        this.setCurrentDate();
+        this.setCurrentDate(c_start_date.getTime());
     };
 
     this.getStartDate = function() {
         return c_start_date;
     };
 
-    this.setCurrentDate = function() {
-        c_current_date = new Date(c_start_date.getTime());
+    this.setCurrentDate = function(current_date) {
+        c_current_date = new Date(current_date);
+        this.setCurrentMonthID();
     };
 
     this.getCurrentDate = function() {
         return c_current_date;
+    };
+
+    this.setCurrentMonthID = function() {
+        c_month_id = c_current_date.getFullYear().toString() + c_current_date.getMonth().toString();
+    };
+
+    this.getCurrentMonthID = function() {
+        return c_month_id;
+    };
+
+    this.getCurrentMonthText = function() {
+        return MONTHS[c_current_date.getMonth()] + " " + c_current_date.getFullYear();
     };
 
     this.setDaysToRender = function(days) {
@@ -48,6 +62,25 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
         return c_country_code;
     };
 
+    /** methods **/
+    this.addNewMonth = function() {
+        $("#dv_container_calendar").append("<div id='dv_container_month_" + this.getCurrentMonthID() + "'></div>");
+        $("#dv_container_month_" + this.getCurrentMonthID()).addClass("container-fluid");
+
+        $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_weekdays_" + this.getCurrentMonthID() + "'></div>");
+        $("#dv_weekdays_" + this.getCurrentMonthID()).addClass("row justify-content-center");
+
+        for(var i = 0; i < 7; i++)
+            $("#dv_weekdays_" + this.getCurrentMonthID()).append("<div class='col'>" + WEEKDAYS[i] + "</div>");
+
+        $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_month_" + this.getCurrentMonthID() + "'><div>" + this.getCurrentMonthText() + "</div></div>");
+        $("#dv_month_" + this.getCurrentMonthID()).addClass("row justify-content-center");
+    };
+
+    this.render = function() {
+        this.addNewMonth();
+    };
+
     /** set-up **/
     this.setStartDate(start_date);
     this.setDaysToRender(days);
@@ -61,9 +94,10 @@ $(document).ready(function() {
 
     $("#bt_submit").click(function(event) {
         var new_calendar = new CALENDAR_NS.Calendar($("#dt_start_date").val(), $("#tf_days").val(), $("#tf_country_code").val());
-        console.log(new_calendar.getStartDate());
-        console.log(new_calendar.getCurrentDate());
-        console.log(new_calendar.getDaysToRender());
-        console.log(new_calendar.getCountryCode());
+        new_calendar.render();
+    });
+
+    $("#bt_reset").click(function(event) {
+        $("#dv_container_calendar").html("");
     });
 });
