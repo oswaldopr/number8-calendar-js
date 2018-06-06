@@ -6,6 +6,7 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
     /** constants **/
     const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
     /** properties **/
     var c_start_date = null;
@@ -34,6 +35,10 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
         return c_current_date;
     };
 
+    this.getCurrentDateMilliseconds = function() {
+        return c_current_date.getTime() * 1;
+    };
+
     this.setCurrentMonthID = function() {
         c_month_id = c_current_date.getFullYear().toString() + c_current_date.getMonth().toString();
     };
@@ -46,8 +51,12 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
         return MONTHS[c_current_date.getMonth()] + " " + c_current_date.getFullYear();
     };
 
-    this.getCurrentWeekday = function() {
+    this.getCurrentMonthWeekday = function() {
         return c_current_date.getDay();
+    };
+
+    this.getCurrentMonthDate = function() {
+        return c_current_date.getDate();
     };
 
     this.setDaysToRender = function(days) {
@@ -67,6 +76,10 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
     };
 
     /** methods **/
+    this.createDateElement = function(parent_id, classes, content) {
+        $("#" + parent_id).append("<div class='col " + classes + "'>" + content + "</div>");
+    };
+
     this.addNewMonth = function() {
         $("#dv_container_calendar").append("<div id='dv_container_month_" + this.getCurrentMonthID() + "'></div>");
         $("#dv_container_month_" + this.getCurrentMonthID()).addClass("container-fluid");
@@ -75,28 +88,60 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
         $("#dv_weekdays_" + this.getCurrentMonthID()).addClass("row justify-content-center");
 
         for(var i = 0; i < 7; i++)
-            $("#dv_weekdays_" + this.getCurrentMonthID()).append("<div class='col'>" + WEEKDAYS[i] + "</div>");
+            this.createDateElement("dv_weekdays_" + this.getCurrentMonthID(), "", WEEKDAYS[i]);
 
         $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_month_" + this.getCurrentMonthID() + "'><div>" + this.getCurrentMonthText() + "</div></div>");
         $("#dv_month_" + this.getCurrentMonthID()).addClass("row justify-content-center");
     };
 
-    this.createDateElement = function(parent_id, classes, content) {
-        $("#" + parent_id).append("<div class='col " + classes + "'>" + content + "</div>");
+    this.createWeek = function(week) {
+        $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_week_" + week + this.getCurrentMonthID() + "'></div>");
+        $("#dv_week_" + week + this.getCurrentMonthID()).addClass("row justify-content-center");
+        return "dv_week_" + week + this.getCurrentMonthID();
     };
 
-    this.renderOffsetDaysLeft = function(week) {
-        for(var i = 0; i < this.getCurrentWeekday(); i++)
-            this.createDateElement("dv_week_" + week + this.getCurrentMonthID(), "", "&nbsp;");
+    this.renderOffsetDaysLeft = function(week_id) {
+        for(var i = 0; i < this.getCurrentMonthWeekday(); i++)
+            //this.createDateElement(week_id, "", "&nbsp;");
+            this.createDateElement(week_id, "", "&mdash;");
     };
 
-    this.renderOffsetDaysRight = function(week) {
-        for(var i = this.getCurrentWeekday(); i < 7; i++)
-            this.createDateElement("dv_week_" + week + this.getCurrentMonthID(), "", "&nbsp;");
+    this.renderOffsetDaysRight = function(week_id) {
+        for(var i = this.getCurrentMonthWeekday(); i > 0 && i < 7; i++)
+            //this.createDateElement(week_id, "", "&nbsp;");
+            this.createDateElement(week_id, "", "&mdash;");
+    };
+
+    this.addNewDay = function() {
+        this.setCurrentDate(this.getCurrentDateMilliseconds() + MILLISECONDS_PER_DAY);
     };
 
     this.render = function() {
+        var week = 1;
+        var week_id = null;
+
         this.addNewMonth();
+        week_id = this.createWeek(week);
+        this.renderOffsetDaysLeft(week_id);
+
+        for(var i = 0; i < this.getDaysToRender(); i++) {
+            if (this.getCurrentMonthWeekday() == 0 && i > 0) {
+                week++;
+                week_id = this.createWeek(week);
+            }
+
+            this.createDateElement(week_id, "", this.getCurrentMonthDate());
+            this.addNewDay();
+
+            if (this.getCurrentMonthDate() == 1) {
+                this.renderOffsetDaysRight(week_id);
+                this.addNewMonth();
+                week++;
+                week_id = this.createWeek(week);
+                this.renderOffsetDaysLeft(week_id);
+            }
+        }
+        this.renderOffsetDaysRight(week_id);
     };
 
     /** set-up **/
