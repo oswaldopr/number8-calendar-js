@@ -1,0 +1,44 @@
+body {
+    cursor: default;
+}
+
+#dv_container_calendar {
+    display: none;
+}
+
+.month-container {
+    margin-top: 2em;
+    border: 1px solid black;
+}
+
+.month-weekdays {
+    background-color: lightcyan;
+    padding: 0.2em;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    text-align: center;
+}
+
+.month-text {
+    background-color: lightgreen;
+    font-weight: bold;
+    padding: 0.2em;
+    margin-bottom: 1px;
+}
+
+.invalid-days {
+    background-color: gray;
+    margin-bottom: 1px;
+}
+
+.weekdays {
+    background-color: green;
+    margin-bottom: 1px;
+    text-align: center;
+}
+
+.weekend {
+    background-color: yellow;
+    margin-bottom: 1px;
+    text-align: center;
+}

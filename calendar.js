@@ -82,16 +82,16 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
 
     this.addNewMonth = function() {
         $("#dv_container_calendar").append("<div id='dv_container_month_" + this.getCurrentMonthID() + "'></div>");
-        $("#dv_container_month_" + this.getCurrentMonthID()).addClass("container-fluid");
+        $("#dv_container_month_" + this.getCurrentMonthID()).addClass("container-fluid month-container");
 
         $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_weekdays_" + this.getCurrentMonthID() + "'></div>");
-        $("#dv_weekdays_" + this.getCurrentMonthID()).addClass("row justify-content-center");
+        $("#dv_weekdays_" + this.getCurrentMonthID()).addClass("row justify-content-center month-weekdays");
 
         for(var i = 0; i < 7; i++)
             this.createDateElement("dv_weekdays_" + this.getCurrentMonthID(), "", WEEKDAYS[i]);
 
         $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_month_" + this.getCurrentMonthID() + "'><div>" + this.getCurrentMonthText() + "</div></div>");
-        $("#dv_month_" + this.getCurrentMonthID()).addClass("row justify-content-center");
+        $("#dv_month_" + this.getCurrentMonthID()).addClass("row justify-content-center month-text");
     };
 
     this.createWeek = function(week) {
@@ -102,14 +102,12 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
 
     this.renderOffsetDaysLeft = function(week_id) {
         for(var i = 0; i < this.getCurrentMonthWeekday(); i++)
-            //this.createDateElement(week_id, "", "&nbsp;");
-            this.createDateElement(week_id, "", "&mdash;");
+            this.createDateElement(week_id, "invalid-days", "&nbsp;");
     };
 
     this.renderOffsetDaysRight = function(week_id) {
         for(var i = this.getCurrentMonthWeekday(); i > 0 && i < 7; i++)
-            //this.createDateElement(week_id, "", "&nbsp;");
-            this.createDateElement(week_id, "", "&mdash;");
+            this.createDateElement(week_id, "invalid-days", "&nbsp;");
     };
 
     this.addNewDay = function() {
@@ -119,6 +117,7 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
     this.render = function() {
         var week = 1;
         var week_id = null;
+        var style_date = null;
 
         this.addNewMonth();
         week_id = this.createWeek(week);
@@ -130,7 +129,8 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
                 week_id = this.createWeek(week);
             }
 
-            this.createDateElement(week_id, "", this.getCurrentMonthDate());
+            style_date = this.getCurrentMonthWeekday() == 0 || this.getCurrentMonthWeekday() == 6 ? "weekend" : "weekdays";
+            this.createDateElement(week_id, style_date, this.getCurrentMonthDate());
             this.addNewDay();
 
             if (this.getCurrentMonthDate() == 1) {
@@ -156,11 +156,14 @@ $(document).ready(function() {
     });
 
     $("#bt_submit").click(function(event) {
+        $("#dv_container_calendar").html("");
         var new_calendar = new CALENDAR_NS.Calendar($("#dt_start_date").val(), $("#tf_days").val(), $("#tf_country_code").val());
         new_calendar.render();
+        $("#dv_container_calendar").show();
     });
 
     $("#bt_reset").click(function(event) {
+        $("#dv_container_calendar").hide();
         $("#dv_container_calendar").html("");
     });
 });
