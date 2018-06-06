@@ -46,6 +46,10 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
         return MONTHS[c_current_date.getMonth()] + " " + c_current_date.getFullYear();
     };
 
+    this.getCurrentWeekday = function() {
+        return c_current_date.getDay();
+    };
+
     this.setDaysToRender = function(days) {
         c_days = days * 1;
     };
@@ -75,6 +79,20 @@ CALENDAR_NS.Calendar = function(start_date, days, country_code) {
 
         $("#dv_container_month_" + this.getCurrentMonthID()).append("<div id='dv_month_" + this.getCurrentMonthID() + "'><div>" + this.getCurrentMonthText() + "</div></div>");
         $("#dv_month_" + this.getCurrentMonthID()).addClass("row justify-content-center");
+    };
+
+    this.createDateElement = function(parent_id, classes, content) {
+        $("#" + parent_id).append("<div class='col " + classes + "'>" + content + "</div>");
+    };
+
+    this.renderOffsetDaysLeft = function(week) {
+        for(var i = 0; i < this.getCurrentWeekday(); i++)
+            this.createDateElement("dv_week_" + week + this.getCurrentMonthID(), "", "&nbsp;");
+    };
+
+    this.renderOffsetDaysRight = function(week) {
+        for(var i = this.getCurrentWeekday(); i < 7; i++)
+            this.createDateElement("dv_week_" + week + this.getCurrentMonthID(), "", "&nbsp;");
     };
 
     this.render = function() {
